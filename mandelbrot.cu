@@ -13,8 +13,8 @@ void draw_pixel(const double real_anker,
                 const int max_iter,
                 const int width,
                 const int height,
-                const long long current_max_pixel){
-  const int index = threadIdx.x + blockIdx.x * blockDim.x + current_max_pixel;
+                const long long already_calculated_pixels){
+  const int index = threadIdx.x + blockIdx.x * blockDim.x + already_calculated_pixels;
 
   if (index >= width * height)
     return;
@@ -82,7 +82,7 @@ int main(int argc, char **argv){
   // TODO strided loop 
   // TODO use fast maths flag??
   // TODO https://developer.nvidia.com/blog/cuda-pro-tip-write-flexible-kernels-grid-stride-loops/
-  long long current_max_pixel = 0;
+  long long already_calculated_pixels = 0;
   
   cudaEvent_t start_kernel, stop_kernel;
   float time_kernel;
@@ -90,7 +90,7 @@ int main(int argc, char **argv){
   cudaEventCreate(&stop_kernel);
   cudaDeviceSynchronize();
   cudaEventRecord(start_kernel, 0);
-  while (current_max_pixel < pixels){
+  while (already_calculated_pixels < pixels){
     draw_pixel<<<gridSize, blockSize>>>(anker_real,
                                         anker_imag,
                                         step_real,
@@ -99,8 +99,8 @@ int main(int argc, char **argv){
                                         max_iter,
                                         width,
                                         height,
-                                        current_max_pixel);
-    current_max_pixel += gridSize * blockSize - 1;
+                                        already_calculated_pixels);
+    already_calculated_pixels += gridSize * blockSize - 1;
   }
   cudaDeviceSynchronize();
 

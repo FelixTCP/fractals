@@ -1,4 +1,5 @@
 CFLAGS += -std=c++20 $(shell libpng-config --cflags) -fopenmp
+CUDAFLAGS += -use_fast_math
 LDFLAGS += $(shell libpng-config --ldflags) -fopenmp
 
 test: test.cu
@@ -8,10 +9,10 @@ rot: rot.cpp complex_number.cpp
 	$(CXX) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
 mandelcuda: mandelbrot.cu color.cpp
-	@/usr/gralab/cuda/11.8.0/bin/nvcc $(shell libpng-config --cflags) -o $@ $^ $(shell libpng-config --ldflags)
+	@/usr/gralab/cuda/11.8.0/bin/nvcc $(shell libpng-config --cflags) $(CUDAFLAGS) -o $@ $^ $(shell libpng-config --ldflags)
 
 mandelcuda_i: mandelbrot_i.cu color.cpp
-	@/usr/gralab/cuda/11.8.0/bin/nvcc $(shell libpng-config --cflags) -o $@ $^ $(shell libpng-config --ldflags)	
+	@/usr/gralab/cuda/11.8.0/bin/nvcc $(shell libpng-config --cflags) $(CUDAFLAGS) -o $@ $^ $(shell libpng-config --ldflags)	 
 
 mandelbrot: mandelbrot.cpp complex_number.cpp color.cpp
 	$(CXX) $(CFLAGS) -o $@ $^ $(LDFLAGS)
